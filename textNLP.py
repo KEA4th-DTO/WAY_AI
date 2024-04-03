@@ -5,6 +5,7 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
 
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # 회귀 스플리터

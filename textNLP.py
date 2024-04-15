@@ -50,7 +50,7 @@ async def upload_file(file: UploadFile = File(...)):
                                     search_kwargs = {'fetch_k':3}
                     ),
                     return_source_documents=False
-)
+        )
 
         query='이 글의 분위기와 핵심 주제를 고려하여 글을 세 단어로 정리해줘'
 

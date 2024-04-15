@@ -34,7 +34,7 @@ class CNN(nn.Module):
     def forward(self, x):
         x = self.pool(torch.relu(self.conv1(x)))
         x = self.pool(torch.relu(self.conv2(x)))
-        x = x.view(-1, 64 * 7 * 7)  # Flatten
+        x = x.view(-1, 64 * 7 * 7)  # 평면화
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x

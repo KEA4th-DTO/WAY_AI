@@ -15,13 +15,12 @@ trans = transforms.Compose([
     transforms.Normalize((0.5, ), (0.5, ))
 ]) 
 
-# MNIST 데이터셋 다운로드
 trainset = torchvision.datasets.ImageFolder(root = "CNNData", transform = trans)
-testset = torchvision.datasets.ImageFolder(root = "CNNData", transform = trans)
+testset = torchvision.datasets.ImageFolder(root = "CNNTData", transform = trans)
 
 # 데이터 로더 설정
-train_loader = torch.utils.data.DataLoader(dataset=trainset, batch_size=64, shuffle=True)
-test_loader = torch.utils.data.DataLoader(dataset=testset, batch_size=64, shuffle=False)
+train_loader = torch.utils.data.DataLoader(dataset=trainset, batch_size=32, shuffle=True)
+test_loader = torch.utils.data.DataLoader(dataset=testset, batch_size=32, shuffle=False)
 
 # CNN 모델 정의
 class CNN(nn.Module):
@@ -49,7 +48,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # 모델 훈련
-num_epochs = 5
+num_epochs = 3
 total_step = len(train_loader)
 for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):
@@ -64,7 +63,7 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if (i+1) % 100 == 0:
+        if (i+1) % 1 == 0:
             print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{total_step}], Loss: {loss.item():.4f}')
 
 print("훈련 완료!")

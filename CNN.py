@@ -8,18 +8,20 @@ import torchvision.transforms as transforms
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # 데이터 전처리
-transform = transforms.Compose([
-    transforms.ToTensor(),  # 이미지를 텐서로 변환
-    transforms.Normalize((0.5,), (0.5,))  # 이미지를 [-1, 1] 범위로 정규화
-])
+trans = transforms.Compose([
+    transforms.Resize((100, 100)),
+    transforms.Grayscale(),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, ), (0.5, ))
+]) 
 
 # MNIST 데이터셋 다운로드
-train_dataset = torchvision.datasets.MNIST(root='./data', train=True, transform=transform, download=True)
-test_dataset = torchvision.datasets.MNIST(root='./data', train=False, transform=transform, download=True)
+trainset = torchvision.datasets.ImageFolder(root = "CNNData", transform = trans)
+testset = torchvision.datasets.ImageFolder(root = "CNNData", transform = trans)
 
 # 데이터 로더 설정
-train_loader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=64, shuffle=True)
-test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=64, shuffle=False)
+train_loader = torch.utils.data.DataLoader(dataset=trainset, batch_size=64, shuffle=True)
+test_loader = torch.utils.data.DataLoader(dataset=testset, batch_size=64, shuffle=False)
 
 # CNN 모델 정의
 class CNN(nn.Module):
@@ -28,13 +30,13 @@ class CNN(nn.Module):
         self.conv1 = nn.Conv2d(1, 32, kernel_size=3, padding=1)  # input channel: 1, output channel: 32
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)  # input channel: 32, output channel: 64
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)  # Max pooling layer
-        self.fc1 = nn.Linear(64 * 7 * 7, 128)  # Fully connected layer
+        self.fc1 = nn.Linear(64 * 25 * 25, 128)  # Fully connected layer, 평면화 후 크기는 64 * 25 * 25
         self.fc2 = nn.Linear(128, 10)  # Output layer
 
     def forward(self, x):
         x = self.pool(torch.relu(self.conv1(x)))
         x = self.pool(torch.relu(self.conv2(x)))
-        x = x.view(-1, 64 * 7 * 7)  # 평면화
+        x = x.view(-1, 64 * 25 * 25)  # 평면화, 크기는 64 * 25 * 25
         x = torch.relu(self.fc1(x))
         x = self.fc2(x)
         return x

@@ -9,11 +9,12 @@ from torchvision import transforms
 
 trans = transforms.Compose([
     transforms.Resize((100, 100)),
+    transforms.Grayscale(),
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ]) 
 
 trainset = torchvision.datasets.ImageFolder(root = "CNNData", transform = trans)
-
 classes = trainset.classes
-print(classes)
+
+print(trainset)

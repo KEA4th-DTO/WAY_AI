@@ -130,9 +130,10 @@ Jeollanam = Polygon([(153, 378), (158, 378), (161, 391),
 polygon_list = [Gangwon, Gyeonggi, Seoul, Chungcheongnam,
                 Chungcheongbuk, Gyeongsangbuk, Gyeongsangnam, 
                 Jeollabuk, Jeollanam]
-filename_list = ["CNNTData/Gangwon", "CNNTData/Gyeonggi", "CNNTData/Seoul", "CNNTData/Chungcheongnam",
-                "CNNTData/Chungcheongbuk", "CNNTData/Gyeongsangbuk", "CNNTData/Gyeongsangnam", 
-                "CNNTData/Jeollabuk", "CNNTData/Jeollanam"]
+
+filename_list = ["CNNData/Gangwon", "CNNData/Gyeonggi", "CNNData/Seoul", "CNNData/Chungcheongnam",
+                "CNNData/Chungcheongbuk", "CNNData/Gyeongsangbuk", "CNNData/Gyeongsangnam", 
+                "CNNData/Jeollabuk", "CNNData/Jeollanam"]
 
 # 지도 이미지 경로 설정
 map_image_path = "CNNData/Map.jpg"  # 지도 이미지 파일 경로 설정
@@ -151,10 +152,10 @@ for polygon, fn in zip(polygon_list, filename_list):
     min_x, min_y, max_x, max_y = polygon.bounds
 
     draw = ImageDraw.Draw(map_image)
-    for j in range(30):
+    for j in range(1000):
         # for i in range(10):
         map_with_pin = map_image.copy()
-        for i in range(100):
+        for i in range(80):
             # 경계 상자 내에 랜덤한 점 생성
             x = random.uniform(min_x, max_x)
             y = random.uniform(min_y, max_y)

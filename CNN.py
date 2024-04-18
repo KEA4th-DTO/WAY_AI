@@ -65,7 +65,7 @@ for epoch in range(num_epochs):
 
         print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{total_step}], Loss: {loss.item():.4f}')
 
-print("훈련 완료!")
+print("Trained Done!")
 
 # 모델 평가
 model.eval()  # 평가 모드로 설정
@@ -79,4 +79,4 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-    print(f'테스트 데이터의 정확도: {100 * correct / total}%')
+    print(f'Accuracy: {100 * correct / total}%')

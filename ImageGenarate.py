@@ -1,6 +1,5 @@
 import os
 from PIL import Image, ImageDraw
-import numpy as np
 import random
 from shapely.geometry import Polygon, Point
 
@@ -127,7 +126,6 @@ Jeollanam = Polygon([(153, 378), (158, 378), (161, 391),
                             (264, 409), (277, 421), (274, 430),
                             (283, 456), (161, 523), (158, 496),
                             (126, 496), (143, 399)])
-
 
 polygon_list = [Gangwon, Gyeonggi, Seoul, Chungcheongnam,
                 Chungcheongbuk, Gyeongsangbuk, Gyeongsangnam, 

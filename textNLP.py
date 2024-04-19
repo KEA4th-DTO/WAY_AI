@@ -8,7 +8,6 @@ from fastapi import FastAPI, File, UploadFile
 
 app = FastAPI()
 
-
 @app.post("/postNLP")
 async def upload_file(file: UploadFile = File(...)):
     try:

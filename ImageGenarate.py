@@ -153,7 +153,6 @@ for polygon, fn in zip(polygon_list, filename_list):
 
     draw = ImageDraw.Draw(map_image)
     for j in range(1000):
-        # for i in range(10):
         map_with_pin = map_image.copy()
         for i in range(80):
             # 경계 상자 내에 랜덤한 점 생성

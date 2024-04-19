@@ -127,14 +127,6 @@ Jeollanam = Polygon([(153, 378), (158, 378), (161, 391),
                             (283, 456), (161, 523), (158, 496),
                             (126, 496), (143, 399)])
 
-polygon_list = [Gangwon, Gyeonggi, Seoul, Chungcheongnam,
-                Chungcheongbuk, Gyeongsangbuk, Gyeongsangnam, 
-                Jeollabuk, Jeollanam]
-
-filename_list = ["CNNData/Gangwon", "CNNData/Gyeonggi", "CNNData/Seoul", "CNNData/Chungcheongnam",
-                "CNNData/Chungcheongbuk", "CNNData/Gyeongsangbuk", "CNNData/Gyeongsangnam", 
-                "CNNData/Jeollabuk", "CNNData/Jeollanam"]
-
 # 지도 이미지 경로 설정
 map_image_path = "CNNData/Map.jpg"  # 지도 이미지 파일 경로 설정
 pin_image_path = "CNNData/Pin.jpg"  # 핀 이미지 파일 경로 설정
@@ -147,6 +139,14 @@ pin_image = Image.open(pin_image_path)
 pin_width = 15
 pin_height = 15
 pin_image_resized = pin_image.resize((pin_width, pin_height))
+
+polygon_list = [Gangwon, Gyeonggi, Seoul, Chungcheongnam,
+                Chungcheongbuk, Gyeongsangbuk, Gyeongsangnam, 
+                Jeollabuk, Jeollanam]
+
+filename_list = ["CNNData/Gangwon", "CNNData/Gyeonggi", "CNNData/Seoul", "CNNData/Chungcheongnam",
+                "CNNData/Chungcheongbuk", "CNNData/Gyeongsangbuk", "CNNData/Gyeongsangnam", 
+                "CNNData/Jeollabuk", "CNNData/Jeollanam"]
 
 for polygon, fn in zip(polygon_list, filename_list):
     min_x, min_y, max_x, max_y = polygon.bounds

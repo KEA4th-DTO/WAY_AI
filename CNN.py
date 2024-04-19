@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
+import torchvision.datasets as dataset
 import torchvision.transforms as transforms
+import torch.utils.data as datautil
 
 # GPU 사용 가능 여부 확인
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -15,12 +16,12 @@ trans = transforms.Compose([
     transforms.Normalize((0.5, ), (0.5, ))
 ])
 
-trainset = torchvision.datasets.ImageFolder(root = "CNNData", transform = trans)
-testset = torchvision.datasets.ImageFolder(root = "CNNTData", transform = trans)
+trainset = dataset.ImageFolder(root = "CNNData", transform = trans)
+testset = dataset.ImageFolder(root = "CNNTData", transform = trans)
 
 # 데이터 로더 설정
-train_loader = torch.utils.data.DataLoader(dataset=trainset, batch_size=32, shuffle=True)
-test_loader = torch.utils.data.DataLoader(dataset=testset, batch_size=32, shuffle=False)
+train_loader = datautil.DataLoader(dataset=trainset, batch_size=32, shuffle=True)
+test_loader = datautil.DataLoader(dataset=testset, batch_size=32, shuffle=False)
 
 # CNN 모델 정의
 class CNN(nn.Module):
@@ -75,19 +76,18 @@ print("Trained Done!")
 # 모델 파일로 저장
 torch.save(model.state_dict(), 'WAY_CNN_model_weights.pth')
 
-# avg_loss = total_loss / (num_epochs * len(train_loader)) 
-# print(f'Average Loss: {avg_loss}')
-# # 모델 평가
-# model.eval()  # 평가 모드로 설정
-# with torch.no_grad():
-#     correct = 0
-#     total = 0
-#     for images, labels in test_loader:
-#         images, labels = images.to(device), labels.to(device)
-#         outputs = model(images)
-#         _, predicted = torch.max(outputs.data, 1)
-#         total += labels.size(0)
-#         correct += (predicted == labels).sum().item()
+avg_loss = total_loss / (num_epochs * len(train_loader)) 
+print(f'Average Loss: {avg_loss}')
+# 모델 평가
+model.eval()  # 평가 모드로 설정
+with torch.no_grad():
+    correct = 0
+    total = 0
+    for images, labels in test_loader:
+        images, labels = images.to(device), labels.to(device)
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
 
-#     print(f'Accuracy: {100 * correct / total}%')
-#     print()
+    print(f'Accuracy: {100 * correct / total}%')

@@ -46,11 +46,12 @@ model.eval()
 image_path = 'CNNTData/Seoul/4.jpg'
 
 input_image = preprocess_image(image_path)
-classes = ['Chungbuk', 'Chungnam', 'Gangwon', 'Gyeonggi', 'Gyeongbuk', 'Gyeongnam', 'Jeonbuk', 'Jeonnam', 'Seoul']
 
 # 추론 수행
 with torch.no_grad():
     output = model(input_image)
 
 _, predicted_class = torch.max(output, 1)
+
+classes = ['Chungbuk', 'Chungnam', 'Gangwon', 'Gyeonggi', 'Gyeongbuk', 'Gyeongnam', 'Jeonbuk', 'Jeonnam', 'Seoul']
 print("Predicted Class:", classes[predicted_class.item()])

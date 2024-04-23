@@ -8,13 +8,17 @@ import torchvision.transforms as transforms
 from PIL import Image
 import torch
 import torch.nn as nn
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, Form
 
 app = FastAPI()
 
-@app.post("/postNLP")
-async def upload_file(file: UploadFile = File(...)):
+@app.get("/postNLP")
+async def NLP(user_id: int = Form(...)):
     try:
+        # DB생성되면 DB에서 텍스트 찾아서 가져올 예정.
+        with open('zindex_all_content.txt') as f:
+            text = f.read()
+            
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
         # 회귀 스플리터
@@ -34,10 +38,10 @@ async def upload_file(file: UploadFile = File(...)):
                 encode_kwargs = encode_kwargs
         )
         # 블로그 글 텍스트파일 읽기
-        contents = await file.read()
+        # contents = await file.read()
         
         # 텍스트로 디코딩하여 처리
-        text = contents.decode("utf-8")
+        # text = contents.decode("utf-8")
         
         # chromadb 버전 0.4.8 고정해두고 쓰자. 버전때문에 골치 좀 아팠다.
         texts = text_splitter.split_text(text)
@@ -57,16 +61,21 @@ async def upload_file(file: UploadFile = File(...)):
 
         query='이 글의 분위기와 핵심 주제를 고려하여 글을 세 단어로 정리해줘'
 
-        result = qa(query)
+        result_dict = qa(query)
+        result = result_dict["result"]
+        values = result.split(",")
         
-        return {"GPT Result": result}
+        return {"GPT Result": values}
       
     except Exception as e:
         return {"error": str(e)}
     
     
-@app.post("/mymapCNN")
-async def process_image(image: UploadFile = File(...)):
+@app.get("/mymapCNN")
+async def process_image(user_id: int = Form(...)):
+    
+    # DB만들어지면 이미지도 유저 id로 검색해서 가져올 예정
+    image = 'CNNTData/Jeollabuk/7.jpg'
     
     class CNN(nn.Module):
         def __init__(self):
@@ -107,9 +116,9 @@ async def process_image(image: UploadFile = File(...)):
     # 모델을 평가 모드로 설정
     model.eval()
 
-    contents = await image.read()
+    # contents = await image.read()
 
-    input_image = preprocess_image(contents)
+    input_image = preprocess_image(image)
     classes = ['Chungbuk', 'Chungnam', 'Gangwon', 'Gyeonggi', 'Gyeongbuk', 'Gyeongnam', 'Jeonbuk', 'Jeonnam', 'Seoul']
 
     # 추론 수행

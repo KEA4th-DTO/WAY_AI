@@ -34,10 +34,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - name: Convert Python code to image
-      run: |
-        python WAY_AI.py
-
     - name: Build and Push
       uses: docker/build-push-action@v4
       with:

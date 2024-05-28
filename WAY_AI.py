@@ -15,9 +15,6 @@ import pymongo
 from kubernetes import client, config
 
 app = FastAPI()
-
-config.load_kube_config()
-v1 = client.CoreV1Api()
     
 def fetch_s3_object(url):
     response = requests.get(url, stream=True)
@@ -79,9 +76,8 @@ def CNN(image_stream):
         return str(e)
 
 def NLP(post_stream):
-    secret = v1.read_namespaced_secret("gpt_apikey", "backend")
-    SECRET_KEY = secret.data.get("secret-key")
     try:
+        gpt_key = os.getenv('GPT_KEY')
         post_text = post_stream.read().decode('utf-8')
         
         # 회귀 스플리터
@@ -108,7 +104,7 @@ def NLP(post_stream):
         
         # 벡터 디비의 결과와 함께 gpt에 전달.
         qa = RetrievalQA.from_chain_type(
-                    llm = ChatOpenAI(model = "gpt-3.5-turbo", temperature=0),
+                    llm = ChatOpenAI(model = "gpt-3.5-turbo", temperature=0, openai_api_key=gpt_key),
                     chain_type = 'stuff',
                     retriever = db.as_retriever(
                                     search_type = 'mmr',

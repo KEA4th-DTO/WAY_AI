@@ -1,0 +1,74 @@
+name: WAY-AI
+run-name: WAY AI
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Qemu
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Login KakaoCloud
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev
+        username: ${{ secrets.ACCESS_KEY }}
+        password: ${{ secrets.ACCESS_SECRET_KEY }}
+
+    - uses: actions/checkout@v3
+
+    - name: Cache pip packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Convert Python code to image
+      run: |
+        python WAY_AI.py
+
+    - name: Build and Push
+      uses: docker/build-push-action@v4
+      with:
+        file: Dockerfile
+        context: .
+        push: true
+        tags: ${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev/${{ secrets.REPOSITORY_NAME }}/way-ai:${{ github.sha }}
+
+  update-deployment-file:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+
+    steps:
+    - name: Checkout argo-manifest repository
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ secrets.USERNAME }}/argo-manifest
+        token: ${{ secrets.PAT }}
+
+    - name: Install yq
+      run: sudo snap install yq
+
+    - name: Update image in rollout file
+      run: |
+        yq e '.spec.template.spec.containers[0].image = "${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev/${{ secrets.REPOSITORY_NAME }}/way-ai:${{ github.sha }}"' ./ai/way-be-aiservice-rollout.yaml -i 
+    - name: Commit and Push changes
+      
+      run: |
+        git config --global user.email "${{ secrets.EMAIL }}"
+        git config --global user.name "${{ secrets.USERNAME }}"
+        git add .
+        git commit -m "[CI/CD] Update way-be-aiservice-rollout.yaml"
+        git remote set-url origin https://${{ secrets.PAT }}@github.com/${{ secrets.USERNAME }}/argo-manifest
+        git push --set-upstream origin HEAD

@@ -1,0 +1,11 @@
+langchain-community==0.2.1
+langchain==0.2.1
+langchain-openai==0.1.7
+torch==2.3.0
+torchvision==0.18.0
+Pillow==10.3.0
+scikit-learn==1.5.0
+fastapi==0.111.0
+requests==2.32.2
+pymongo==4.7.2
+kubernetes==29.0.0

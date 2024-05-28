@@ -58,7 +58,7 @@ jobs:
 
     - name: Update image in rollout file
       run: |
-        yq e '.spec.template.spec.containers[0].image = "${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev/${{ secrets.REPOSITORY_NAME }}/way-ai:${{ github.sha }}"' ./ai/way-be-aiservice-rollout.yaml -i 
+        yq e '.spec.template.spec.containers[0].image = "${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev/${{ secrets.REPOSITORY_NAME }}/way-ai:${{ github.sha }}"' ./AI/way-be-aiservice-rollout.yaml -i 
     - name: Commit and Push changes
       
       run: |

@@ -3,8 +3,8 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY install.txt .
-RUN pip install -r install.txt --no-cache-dir --progress-bar off --prefer-binary --use-feature=fast-deps
+COPY requirements.txt .
+RUN pip install -r requirements.txt --no-cache-dir --progress-bar off --prefer-binary --use-feature=fast-deps
 
 # 소스 코드 복사
 COPY . .

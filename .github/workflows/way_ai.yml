@@ -46,8 +46,8 @@ jobs:
 
     - name: Update image in rollout file
       run: |
-        yq e '.spec.template.spec.containers[0].image = "docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}:${{ github.sha }}"' ./AI/way-be-aiservice-rollout.yaml -i 
-         
+        yq e '.spec.template.spec.containers[0].image = "docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/way-ai:${{ github.sha }}"' ./AI/way-be-aiservice-rollout.yaml -i 
+
     - name: Commit and Push changes
       
       run: |

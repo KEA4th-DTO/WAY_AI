@@ -27,7 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev/${{ secrets.REPOSITORY_NAME }}/way-ai:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/way-ai:${{ github.sha }}
       
         
   # update-deployment-file:

@@ -12,20 +12,36 @@ jobs:
     - name: Set up Qemu
       uses: docker/setup-qemu-action@v2
 
-    - name: Build Docker image
-      run: |
-        cd ..
-        docker build -t way-ai .
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
 
-    - name: Login to Docker Hub
-      run: docker login gcu-dto-dev.kr-central-2.kcr.dev --username ${{ secrets.ACCESS_KEY }} --password ${{ secrets.ACCESS_SECRET_KEY }}
+    - name: Login KakaoCloud
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev
+        username: ${{ secrets.ACCESS_KEY }}
+        password: ${{ secrets.ACCESS_SECRET_KEY }}
 
-    - name: Tag Docker image
-      run: docker tag way-ai gcu-dto-dev.kr-central-2.kcr.dev/way-ai/way-ai:${{ github.sha }}
+    - uses: actions/checkout@v3
 
-    - name: Push Docker image to registry
-      run: docker push gcu-dto-dev.kr-central-2.kcr.dev/way-ai/way-ai:${{ github.sha }}
+    - name: Cache pip packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/install.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
+    - name: Build and Push
+      uses: docker/build-push-action@v4
+      with:
+        file: Dockerfile
+        context: .
+        push: true
+        tags: ${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev/${{ secrets.REPOSITORY_NAME }}/way-ai:${{ github.sha }}
+        
   update-deployment-file:
     runs-on: ubuntu-latest
     needs: build-and-push-image

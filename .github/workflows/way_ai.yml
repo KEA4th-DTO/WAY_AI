@@ -13,7 +13,9 @@ jobs:
       uses: docker/setup-qemu-action@v2
 
     - name: Build Docker image
-      run: docker build -t way-ai .
+      run: |
+        cd ..
+        docker build -t way-ai .
 
     - name: Login to Docker Hub
       run: docker login gcu-dto-dev.kr-central-2.kcr.dev --username ${{ secrets.ACCESS_KEY }} --password ${{ secrets.ACCESS_SECRET_KEY }}

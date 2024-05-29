@@ -13,9 +13,20 @@ from PIL import Image
 from fastapi import FastAPI, Form, HTTPException
 import pymongo
 from kubernetes import client, config
+import base64
 
 app = FastAPI()
-    
+
+config.load_kube_config()
+v1 = client.CoreV1Api()
+secret = v1.read_namespaced_secret("way-be-aiservice-secret", "backend")
+secret_data = secret.data
+for key, value in secret_data.items():
+    if key == "GPT-KEY":
+        gpt_key = base64.b64decode(secret_data[key]).decode('utf-8')
+    elif key == "mongoURL":
+        mongo_client = base64.b64decode(secret_data[key]).decode('utf-8')
+
 def fetch_s3_object(url):
     response = requests.get(url, stream=True)
     if response.status_code != 200:
@@ -77,7 +88,6 @@ def CNN(image_stream):
 
 def NLP(post_stream):
     try:
-        gpt_key = os.getenv('GPT_KEY')
         post_text = post_stream.read().decode('utf-8')
         
         # 회귀 스플리터
@@ -135,7 +145,7 @@ def vectorization(list, region):
     return tfidf_vector
 
 def mongo_insert(id, vector):
-    client = pymongo.MongoClient("mongodb+srv://shc3113:1234@dto1.gqe0atf.mongodb.net/way?retryWrites=true&w=majority&appName=DTO1")
+    client = pymongo.MongoClient(mongo_client)
     
     db = client["way"]
     collection = db["user_vector"]

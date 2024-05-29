@@ -10,4 +10,3 @@ requests==2.32.2
 pymongo==4.7.2
 kubernetes==29.0.0
 uvicorn==0.29.0
-fastapi==0.111.0

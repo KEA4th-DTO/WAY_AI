@@ -72,6 +72,7 @@ def CNN(image_stream):
         _, predicted_class = torch.max(output, 1)
         
         classes = ['Chungbuk', 'Chungnam', 'Gangwon', 'Gyeonggi', 'Gyeongbuk', 'Gyeongnam', 'Jeonbuk', 'Jeonnam', 'Seoul']
+        print("class for img: ", classes[predicted_class.item()])
         return classes[predicted_class.item()]
     
     except Exception as e:

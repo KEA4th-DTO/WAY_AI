@@ -114,7 +114,7 @@ def NLP(post_stream):
                     return_source_documents=False
         )
 
-        query = '저장된 글의 분위기와 핵심 주제를 각각 하나의 단어로 표현해줘. 결과는 총 세 단어로, 쉼표로 구분해줘.'
+        query = '저장된 글의 분위기와 핵심 주제를 각각 하나의 단어로 표현해줘. 결과는 총 세 단어로, 쉼표로 구분해줘. 예를 들어, "행복, 도전, 성장" 같은 형식으로.'
 
         result = qa(query)
         result_ = result["result"]
@@ -153,7 +153,9 @@ def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str =
     
     text_stream = fetch_s3_object(text_url)
     way_tag = NLP(text_stream)
-    print(way_tag)
+    if len(way_tag) != 3:
+        way_tag = []
+        exit()
     
     image_stream = fetch_s3_object(image_url)
     region_tag = CNN(image_stream)

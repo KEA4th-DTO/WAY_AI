@@ -11,5 +11,5 @@ pymongo==4.7.2
 kubernetes==29.0.0
 uvicorn==0.29.0
 sentence-transformers==3.0.0
-chroma-hnswlib==0.5.1
+chroma-hnswlib==0.7.0
 chromadb==0.4.24

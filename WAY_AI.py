@@ -153,6 +153,7 @@ def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str =
     
     text_stream = fetch_s3_object(text_url)
     way_tag = NLP(text_stream)
+    print(way_tag)
     
     image_stream = fetch_s3_object(image_url)
     region_tag = CNN(image_stream)

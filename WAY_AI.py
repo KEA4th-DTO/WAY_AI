@@ -157,11 +157,11 @@ def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str =
         way_tag = []
         exit()
     
-    image_stream = fetch_s3_object(image_url)
-    region_tag = CNN(image_stream)
+    # image_stream = fetch_s3_object(image_url)
+    # region_tag = CNN(image_stream)
     
-    vex = vectorization(way_tag, region_tag)
+    # vex = vectorization(way_tag, region_tag)
     
-    mongo_insert(user_id, vex)
+    # mongo_insert(user_id, vex)
 
     return way_tag

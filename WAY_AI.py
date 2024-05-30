@@ -28,6 +28,7 @@ def fetch_s3_object(url):
 def CNN(image_stream):
     image_raw = Image.open(image_stream)
     image = image_raw.resize((550, 550))
+    print(image)
     try:
         class CNN(nn.Module):
             def __init__(self):

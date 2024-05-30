@@ -17,10 +17,11 @@ import base64
 
 app = FastAPI()
 
-config.load_kube_config()
+config.load_incluster_config()
 v1 = client.CoreV1Api()
 secret = v1.read_namespaced_secret("way-be-aiservice-secret", "backend")
 secret_data = secret.data
+
 for key, value in secret_data.items():
     if key == "GPT-KEY":
         gpt_key = base64.b64decode(secret_data[key]).decode('utf-8')

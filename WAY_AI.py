@@ -128,9 +128,14 @@ def vectorization(list, region):
     plain_vector = list + [region]
     combined = ' '.join(plain_vector)
     
+    print("combined list : ", combined)
+    
     vectorizer = TfidfVectorizer()
     
     tfidf_matrix = vectorizer.fit_transform([combined])
+    
+    print("TFIDF : ", tfidf_matrix)
+    
     tfidf_vector = tfidf_matrix.toarray()[0]
     
     return tfidf_vector

@@ -148,7 +148,7 @@ def mongo_insert(id, vector):
     
     collection.insert_one(document)
 
-@app.get("/ai-service/user_tag")
+@app.post("/ai-service/user_tag")
 def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str = Form(...)):
     
     text_stream = fetch_s3_object(text_url)

@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 import requests
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -25,8 +26,9 @@ def fetch_s3_object(url):
     return response.raw
 
 def CNN(image_stream):
+    image_stream = BytesIO(image_stream)
     image_raw = Image.open(image_stream)
-    image = image_raw.resize((550, 550))  # 이미지 크기 조정 예시
+    image = image_raw.resize((550, 550))
     try:
         class CNN(nn.Module):
             def __init__(self):

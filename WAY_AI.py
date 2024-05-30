@@ -161,6 +161,7 @@ def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str =
     region_tag = CNN(image_stream)
     
     vex = vectorization(way_tag, region_tag)
+    vex = vex.tolist()
     
     mongo_insert(user_id, vex)
 

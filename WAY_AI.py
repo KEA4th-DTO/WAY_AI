@@ -12,21 +12,11 @@ import torch.nn as nn
 from PIL import Image
 from fastapi import FastAPI, Form, HTTPException
 import pymongo
-from kubernetes import client, config
-import base64
 
 app = FastAPI()
 
-config.load_incluster_config()
-v1 = client.CoreV1Api()
-secret = v1.read_namespaced_secret("way-be-aiservice-secret", "backend")
-secret_data = secret.data
-
-for key, value in secret_data.items():
-    if key == "GPT-KEY":
-        gpt_key = base64.b64decode(secret_data[key]).decode('utf-8')
-    elif key == "mongoURL":
-        mongo_client = base64.b64decode(secret_data[key]).decode('utf-8')
+gpt_key = os.environ.get('GPT-KEY')
+mongo_client = os.environ.get("mongoURL")
 
 def fetch_s3_object(url):
     response = requests.get(url, stream=True)

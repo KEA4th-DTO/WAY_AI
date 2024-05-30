@@ -79,7 +79,7 @@ def CNN(image_stream):
 
 def NLP(post_stream):
     try:
-        post_text = post_stream.read()
+        post_text = post_stream.read().decode('utf-8')
         
         # 회귀 스플리터
         text_splitter = RecursiveCharacterTextSplitter(

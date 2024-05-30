@@ -114,7 +114,7 @@ def NLP(post_stream):
                     return_source_documents=False
         )
 
-        query = '저장된 글의 분위기와 핵심 주제를 글을 세 단어로 정리해줘'
+        query = '저장된 글의 분위기와 핵심 주제를 각각 하나의 단어로 표현해줘. 결과는 총 세 단어로, 쉼표로 구분해줘.'
 
         result = qa(query)
         result_ = result["result"]

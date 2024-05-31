@@ -50,14 +50,14 @@ def CNN(image_stream):
                 x = self.fc2(x)
                 return x
 
-        def preprocess_image(image):
+        def preprocess_image(img):
             transform = transforms.Compose([
                 transforms.Resize((128, 128)),
                 transforms.Grayscale(),
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, ), (0.5, ))
             ])     
-            image_processed = transform(image).unsqueeze(0)  
+            image_processed = transform(img).unsqueeze(0)  
             return image_processed
 
         # 모델 인스턴스 생성

@@ -27,7 +27,7 @@ def fetch_s3_object(url):
     return response.raw
 
 def CNN(image_stream):
-    image_data = image_stream.content
+    image_data = image_stream.read()
     image_stream = BytesIO(image_data)
     image_raw = Image.open(image_stream)
     image = image_raw.resize((550, 550))

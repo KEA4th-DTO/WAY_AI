@@ -23,7 +23,7 @@ def fetch_s3_object(url):
     response = requests.get(url, stream=True)
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch S3 object")
-    return response.raw.read()
+    return response.raw
 
 def CNN(image_stream):
     image_data = image_stream.read()

@@ -131,15 +131,13 @@ def vectorization(list, region):
     plain_vector = list + [region]
     combined = ' '.join(plain_vector)
     
-    print("combined list : ", combined)
-    
     vectorizer = TfidfVectorizer()
     
     tfidf_matrix = vectorizer.fit_transform([combined])
     
-    print("TFIDF : ", tfidf_matrix)
-    
     tfidf_vector = tfidf_matrix.toarray()[0]
+    
+    print("TFIDF : ", tfidf_vector)
     
     return tfidf_vector
 
@@ -161,7 +159,7 @@ def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str =
     
     text_stream = fetch_s3_object(text_url)
     way_tag = NLP(text_stream)
-    print(way_tag)
+
     if len(way_tag) != 3:
         way_tag = []
         exit()
@@ -170,8 +168,9 @@ def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str =
     region_tag = CNN(image_stream)
     
     vex = vectorization(way_tag, region_tag)
-    vex = vex.tolist()
+    vec = vex.tolist()
+    print("db vec: ", vec)
     
-    mongo_insert(user_id, vex)
+    mongo_insert(user_id, vec)
 
     return way_tag

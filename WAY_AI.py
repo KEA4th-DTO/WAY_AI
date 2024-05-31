@@ -147,11 +147,11 @@ def mongo_insert(id, vector):
     collection = db["user_vector"]
     
     document = {
-        "user_id": id,
+        "_id": id,
         "vector_value": vector
     }
     
-    collection.insert_one(document)
+    collection.replace_one({"_id": id}, document, upsert=True)
 
 @app.post("/ai-service/user_tag")
 def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str = Form(...)):

@@ -8,6 +8,7 @@ from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
 import torchvision.transforms as transforms
 from sklearn.feature_extraction.text import TfidfVectorizer
+from transformers import BertModel, BertTokenizer
 import torch
 import torch.nn as nn
 from PIL import Image
@@ -128,18 +129,16 @@ def NLP(post_stream):
         return {"error": str(e)}
 
 def vectorization(list, region):
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    model = BertModel.from_pretrained('bert-base-uncased')
+    
     plain_vector = list + [region]
     combined = ' '.join(plain_vector)
     
-    vectorizer = TfidfVectorizer()
+    inputs = tokenizer(combined, return_tensors='pt')
+    outputs = model(**inputs)
     
-    tfidf_matrix = vectorizer.fit_transform([combined])
-    
-    tfidf_vector = tfidf_matrix.toarray()[0]
-    
-    print("TFIDF : ", tfidf_vector)
-    
-    return tfidf_vector
+    return outputs.last_hidden_state.mean(dim=1).detach().numpy()
 
 def mongo_insert(id, vector):
     client = pymongo.MongoClient(mongo_client)

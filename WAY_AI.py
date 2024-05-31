@@ -23,15 +23,13 @@ def fetch_s3_object(url):
     response = requests.get(url, stream=True)
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch S3 object")
-    print(response.raw)
-    return response.raw
+    return response.raw.read()
 
 def CNN(image_stream):
     image_data = image_stream.read()
     image_stream = BytesIO(image_data)
     image_raw = Image.open(image_stream)
     image = image_raw.resize((550, 550))
-    print(image)
     try:
         class CNN(nn.Module):
             def __init__(self):
@@ -52,16 +50,15 @@ def CNN(image_stream):
                 x = self.fc2(x)
                 return x
 
-        def preprocess_image(image_path):
+        def preprocess_image(image):
             transform = transforms.Compose([
                 transforms.Resize((128, 128)),
                 transforms.Grayscale(),
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, ), (0.5, ))
-            ])
-            image = Image.open(image_path)     
-            image = transform(image).unsqueeze(0)  
-            return image
+            ])     
+            image_processed = transform(image).unsqueeze(0)  
+            return image_processed
 
         # 모델 인스턴스 생성
         model = CNN()

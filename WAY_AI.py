@@ -163,6 +163,7 @@ def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str =
     way_tag = NLP(text_stream)
     if len(way_tag) != 3:
         way_tag = []
+        print(way_tag)
         exit()
     
     image_stream = fetch_s3_object(image_url)

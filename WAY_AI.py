@@ -7,13 +7,13 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_openai import ChatOpenAI
 import torchvision.transforms as transforms
-from sklearn.feature_extraction.text import TfidfVectorizer
 from transformers import BertModel, BertTokenizer
 import torch
 import torch.nn as nn
 from PIL import Image
 from fastapi import FastAPI, Form, HTTPException
 import pymongo
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = FastAPI()
 
@@ -144,8 +144,8 @@ def mongo_insert(id, vector):
     client = pymongo.MongoClient(mongo_client)
     
     db = client["way"]
-    collection = db["user_vector"]
-    
+    collection = db["user_vector"]    
+
     document = {
         "_id": id,
         "vector_value": vector
@@ -173,3 +173,22 @@ def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str =
     mongo_insert(user_id, vec)
 
     return way_tag
+
+@app.post("/ai-service/recommendation")
+def way_req(user_id: int = Form(...)):
+    client = pymongo.MongoClient(mongo_client)
+    
+    db = client["way"]
+    collection = db["user_vector"]
+        
+    user_vector = collection.find_one({'_id': user_id})['vector_value']
+    all_vectors = list(collection.find())
+    
+    similarities = []
+    for other in all_vectors:
+        if other['_id'] != user_id:
+            sim = cosine_similarity([user_vector], [other['vector_value']])
+            similarities.append((other['_id'], sim[0][0]))
+    
+    similarities.sort(key=lambda x: x[1], reverse=True)
+    return similarities[:3]

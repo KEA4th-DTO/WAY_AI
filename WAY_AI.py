@@ -14,6 +14,7 @@ from PIL import Image
 from fastapi import FastAPI, Form, HTTPException
 import pymongo
 from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 app = FastAPI()
 
@@ -105,15 +106,15 @@ def NLP(post_stream):
         # chromadb 버전 0.4.8 고정해두고 쓰자. 버전때문에 골치 좀 아팠다.
         texts = text_splitter.split_text(post_text)
         split = text_splitter.create_documents(texts)
-        db = Chroma.from_documents(split, hf)
+        db = Chroma.from_documents(split, hf, persist_directory=None)
         
         # 벡터 디비의 결과와 함께 gpt에 전달.
         qa = RetrievalQA.from_chain_type(
-                    llm = ChatOpenAI(model = "gpt-3.5-turbo", temperature=0, openai_api_key=gpt_key),
+                    llm = ChatOpenAI(model = "gpt-4o", temperature=0, openai_api_key=gpt_key),
                     chain_type = 'stuff',
                     retriever = db.as_retriever(
                                     search_type = 'mmr',
-                                    search_kwargs = {'fetch_k':3}
+                                    search_kwargs = {'fetch_k':5}
                     ),
                     return_source_documents=False
         )
@@ -180,14 +181,21 @@ def way_req(user_id: int = Form(...)):
     
     db = client["way"]
     collection = db["user_vector"]
-        
-    user_vector = collection.find_one({'_id': user_id})['vector_value']
+    
+    user_document = collection.find_one({'_id': user_id})
+    if not user_document:
+        raise Exception("User ID not found")
+    
+    user_vector = np.array(user_document['vector_value'])
     all_vectors = list(collection.find())
     
     similarities = []
     for other in all_vectors:
         if other['_id'] != user_id:
-            sim = cosine_similarity([user_vector], [other['vector_value']])
+            other_vector = np.array(other['vector_value'])
+            user_vector_2d = user_vector.reshape(1, -1)
+            other_vector_2d = other_vector.reshape(1, -1)
+            sim = cosine_similarity(user_vector_2d, other_vector_2d)
             similarities.append((other['_id'], sim[0][0]))
     
     similarities.sort(key=lambda x: x[1], reverse=True)

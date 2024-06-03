@@ -22,6 +22,7 @@ gpt_key = os.environ.get('GPT-KEY')
 mongo_client = os.environ.get("mongoURL")
 
 def fetch_s3_object(url):
+    print("full s3 url: ", url)
     response = requests.get(url, stream=True)
     if response.status_code != 200:
         raise HTTPException(status_code=response.status_code, detail="Failed to fetch S3 object")

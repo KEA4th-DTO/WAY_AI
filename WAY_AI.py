@@ -199,4 +199,9 @@ def way_req(user_id: int = Form(...)):
             similarities.append((other['_id'], sim[0][0]))
     
     similarities.sort(key=lambda x: x[1], reverse=True)
-    return similarities[:3]
+    result = []
+    
+    for i in range(3):
+        result.append(similarities[i][0])
+        
+    return result

@@ -15,11 +15,17 @@ from fastapi import FastAPI, Form, HTTPException
 import pymongo
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import psycopg2
 
 app = FastAPI()
 
 gpt_key = os.environ.get('GPT-KEY')
 mongo_client = os.environ.get("mongoURL")
+postgres_dbname = os.environ.get("postgres_name")
+postgres_user = os.environ.get("postgres_user")
+postgres_pw = os.environ.get("postgres_pw")
+postgres_host = os.environ.get("postgres_host")
+postgres_port = os.environ.get("postgres_port")
 
 def fetch_s3_object(url):
     print("full s3 url: ", url)
@@ -155,29 +161,7 @@ def mongo_insert(id, vector):
     
     collection.replace_one({"_id": id}, document, upsert=True)
 
-@app.post("/ai-service/user_tag")
-def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str = Form(...)):
-    
-    text_stream = fetch_s3_object(text_url)
-    way_tag = NLP(text_stream)
-
-    if len(way_tag) != 3:
-        way_tag = []
-        exit()
-    
-    image_stream = fetch_s3_object(image_url)
-    region_tag = CNN(image_stream)
-    
-    vex = vectorization(way_tag, region_tag)
-    vec = vex.tolist()
-    print("db vec: ", vec)
-    
-    mongo_insert(user_id, vec)
-
-    return way_tag
-
-@app.post("/ai-service/recommendation")
-def way_req(user_id: int = Form(...)):
+def calculate_recommendation(user_id):
     client = pymongo.MongoClient(mongo_client)
     
     db = client["way"]
@@ -206,3 +190,61 @@ def way_req(user_id: int = Form(...)):
         result.append(similarities[i][0])
         
     return result
+
+def store_recommendation(user_id, recoList):
+    conn = psycopg2.connect(
+        dbname=postgres_dbname,
+        user=postgres_user,
+        password=postgres_pw,
+        host=postgres_host,
+        port=postgres_port
+    )
+    
+    cur = conn.cursor()
+    select_query = "SELECT 1 FROM recommend WHERE recommended_member = %s;"
+    cur.execute(select_query, (user_id,))
+    result = cur.fetchone()
+
+    if result:
+        # recommended_member가 존재하면 업데이트
+        update_query = """
+        UPDATE recommend
+        SET member_id1 = %s, member_id2 = %s, member_id3 = %s
+        WHERE recommended_member = %s;
+        """
+        cur.execute(update_query, (recoList[0], recoList[1], recoList[2], user_id))
+    else:
+        # recommended_member가 존재하지 않으면 삽입
+        insert_query = """
+        INSERT INTO recommend (member_id1, member_id2, member_id3, recommended_member)
+        VALUES (%s, %s, %s, %s);
+        """
+        cur.execute(insert_query, (recoList[0], recoList[1], recoList[2], user_id))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+
+@app.post("/ai-service/user_tag")
+def way_ai(user_id: int = Form(...), image_url: str = Form(...), text_url: str = Form(...)):
+    
+    text_stream = fetch_s3_object(text_url)
+    way_tag = NLP(text_stream)
+
+    if len(way_tag) != 3:
+        way_tag = []
+        exit()
+    
+    image_stream = fetch_s3_object(image_url)
+    region_tag = CNN(image_stream)
+    
+    vex = vectorization(way_tag, region_tag)
+    vec = vex.tolist()
+    print("db vec: ", vec)
+    
+    mongo_insert(user_id, vec)
+    
+    store_recommendation(user_id, calculate_recommendation(user_id))
+
+    return way_tag

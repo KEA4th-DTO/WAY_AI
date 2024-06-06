@@ -139,7 +139,7 @@ def NLP(post_stream):
 def vectorization(list, region):
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     model = BertModel.from_pretrained('bert-base-uncased')
-    region_weighted = region * 5
+    region_weighted = region * 6
     plain_vector = list + [region_weighted]
     combined = ' '.join(plain_vector)
     

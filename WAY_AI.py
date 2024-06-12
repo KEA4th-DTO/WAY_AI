@@ -82,7 +82,7 @@ def CNN(image_stream):
             output = model(input_image)
         _, predicted_class = torch.max(output, 1)
         
-        classes = ['0', '1', '2', '3', '4', '5', '6', '7', '8']
+        classes = ['서울', '경기도', '충청북도', '충청남도', '경기도', '전라북도', '경상북도', '전라남도', '경상북도']
         print("class for img: ", classes[predicted_class.item()])
         return classes[predicted_class.item()]
     
@@ -139,8 +139,8 @@ def NLP(post_stream):
 def vectorization(list, region):
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     model = BertModel.from_pretrained('bert-base-uncased')
-    region_weighted = region * 6
-    plain_vector = list + [region_weighted]
+    
+    plain_vector = list + [region]
     combined = ' '.join(plain_vector)
     
     inputs = tokenizer(combined, return_tensors='pt')
